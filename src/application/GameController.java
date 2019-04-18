@@ -11,12 +11,12 @@ public class GameController extends Application {
 	View view = new View();
 	String output = new Level(LevelData.LEVEL1).getOutput();
 	int curChar = 0, mistakes = 0;
-	
-    @Override
+
+	@Override
     public void start(Stage primaryStage) {
     	view.setController(this);
     	Scene scene = view.init();
-    	
+
     	view.setText(view.text, output);
     	view.setText(view.mistakes, "mistakes = " + mistakes);
     	view.setImage(new Image("a.png"));
@@ -24,7 +24,7 @@ public class GameController extends Application {
     	scene.setOnKeyPressed(ke -> onKeyPressed(ke.getText()));
     	primaryStage.show();
     }
-    
+
     void onKeyPressed(String ke) {
     	char[] array = output.toCharArray();
     	System.out.println(array[curChar] + ", " + ke);
@@ -33,12 +33,12 @@ public class GameController extends Application {
     		curChar=curChar<array.length?curChar+1:0;
     	}
     	else {
-    		mistakes++; 
+    		mistakes++;
     		view.setText(view.mistakes, "mistakes = " + mistakes);
     	}
     	view.setText(view.lastTyped, "last typed = " + ke);
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
