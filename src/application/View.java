@@ -5,20 +5,26 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class View {
-	GameController controller;
-	Label text = new Label("text to type");
+	HBox text = new HBox();
 	Label mistakes = new Label("mistakes = 0");
 	Label lastTyped = new Label("last typed = ");
 	ImageView keyboard = new ImageView();
+	int charAmount;
 	
 	Scene init() {
 		VBox root = new VBox(10);
 		root.setStyle("-fx-font-size: 20px;");
 		
-		root.getChildren().addAll(mistakes, lastTyped, text, keyboard);
+		for(int i = 0; i < charAmount; i++) {
+			text.getChildren().add(new Label(""));
+		}
+		text.setAlignment(Pos.CENTER);
+		
+		root.getChildren().addAll(mistakes, text, lastTyped, keyboard);
 		root.setAlignment(Pos.CENTER);
 		
 		return new Scene(root);
@@ -32,7 +38,7 @@ public class View {
 		keyboard.setImage(image);
 	}
 	
-	void setController(GameController controller) {
-		this.controller = controller;
+	void setAmount(int amount) {
+		charAmount = amount;
 	}
 }

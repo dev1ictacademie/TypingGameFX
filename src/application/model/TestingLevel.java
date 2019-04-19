@@ -8,7 +8,7 @@ public class TestingLevel {
 
 
 		Level level = new Level(LevelData.LEVEL1);
-/*
+
 		System.out.println(level.getOutput());
 
 		level.setData(LevelData.LEVEL2);
@@ -30,18 +30,6 @@ public class TestingLevel {
 		level.setNumberOfCharstoType(25);
 
 		System.out.println(level.getOutput());
-
-		level.setData(LevelData.LEVEL5);
-		level.setNumberOfCharstoType(25);
-
-		System.out.println(level.getOutput());
-*/
-		level.setData(LevelData.LEVEL6);
-		level.setNumberOfWordstoType(8);
-
-		System.out.println( " Level 6 " + level.getOutput());
-
-
 
 	}
 
