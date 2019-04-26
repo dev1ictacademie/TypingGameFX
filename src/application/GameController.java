@@ -12,19 +12,15 @@ import javafx.stage.Stage;
 
 public class GameController extends Application {
 	View view = new View();
-	String output = new Level(LevelData.LEVEL1).getOutput();
 	HashMap<String, Image> keyboard = keyboard();
-	int curChar = 0;//, mistakes = 0;
+	int curChar = 0, curLevel = 0;//, mistakes = 0;
 	long timeStamp, cpm = 0;
 	boolean anim = false;
 	AnimationTimer at;
+	String output = new Level(LevelData.levels[curLevel]).getOutput();
 
 	@Override
     public void start(Stage primaryStage) {
-		// FIXME Level select, 80% accuracy
-		//Level level = new Level(LevelData.LEVEL1);
-		//level.setNumberOfCharstoType(int);
-		//String output = level.getOutput();
     	view.setAmount(output.length());
     	Scene scene = view.init();
 
@@ -42,8 +38,7 @@ public class GameController extends Application {
 	            public void handle(long currentNanoTime) {
 	               if (frameCount % 6 == 0) {
 	            	   Label label = view.getLabel(curChar);
-	            	   // FIXME 300 is an arbitrary number (scene height / 2)
-	            	   label.setTranslateY(label.getTranslateY()>=300?0:label.getTranslateY()+10);
+	            	   label.setTranslateY(label.getTranslateY()>=(scene.getHeight()/2)?0:label.getTranslateY()+10);
 	               }         
 	               frameCount++;
 	            }
@@ -56,6 +51,24 @@ public class GameController extends Application {
     	primaryStage.show();
     }
 
+	void update() {
+		if ((view.getMistakes() + 0.1)/output.length() < 0.8) {
+			curLevel=curLevel<LevelData.levels.length-1?curLevel+1:0;
+			view.setCurLevel("Current level = " + curLevel);
+		}
+		Level level = new Level(LevelData.levels[curLevel]);
+		//level.setNumberOfCharstoType(int);
+
+		output = level.getOutput();
+		view.setAmount(output.length());
+		view.update();
+		
+		
+    	for(int i = 0; i < output.length(); i++) {
+    		view.setText(view.getLabel(i), output.charAt(i)+"");
+    	}
+	}
+	
     void onKeyPressed(String ke) {
     	// process keyboard input
     	char[] array = output.toCharArray();
@@ -65,7 +78,7 @@ public class GameController extends Application {
     		
     		// To continue : move the following lines outside if-statement
     		curChar=(curChar<array.length-1)?curChar+1:0; 
-    		//FIXME if (curChar == 0) view.text.getChildren().stream().forEach(n -> n.setStyle(null)); 
+    		if (curChar == 0) update(); 
     		view.getLabel(curChar).setStyle("-fx-border-width: 1; -fx-border-color: #000000;");
     		if(!anim) view.setImage(keyboard.get(output.charAt(curChar)+""));
     	}

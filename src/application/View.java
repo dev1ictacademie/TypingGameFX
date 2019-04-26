@@ -15,6 +15,7 @@ public class View {
 	private IntegerProperty mistakes = new SimpleIntegerProperty();
 	private DoubleProperty cpm = new SimpleDoubleProperty();
 	private StringProperty lastTyped = new SimpleStringProperty("last typed = ");
+	private StringProperty curLevel = new SimpleStringProperty();
 	private ImageView keyboard = new ImageView();
 	private int charAmount;
 	
@@ -37,12 +38,12 @@ public class View {
 		Label lastTypedLabel = new Label("last typed = ");
 		lastTypedLabel.textProperty().bind(lastTyped);
 		
-		topLeft.getChildren().addAll(mistakesLabel, cpmLabel, lastTypedLabel);
+		Label curLevelLabel = new Label("Current level = ");
+		curLevelLabel.textProperty().bind(curLevel);
 		
-		for(int i = 0; i < charAmount; i++) {
-			text.getChildren().add(new Label(""));
-		}
-		text.setAlignment(Pos.CENTER);
+		topLeft.getChildren().addAll(mistakesLabel, cpmLabel, lastTypedLabel, curLevelLabel);
+		
+		update();
 		
 		VBox middle = new VBox(50);
 		middle.getChildren().addAll(text, keyboard);
@@ -50,8 +51,18 @@ public class View {
 		middle.setStyle("-fx-font-size: 30px;");
 		
 		root.getChildren().addAll(topLeft, middle);
-		
 		return new Scene(root, 800, 600);
+	}
+	
+	void update() {
+		//TODO Move to next row
+		text.getChildren().clear();
+		for(int i = 0; i < charAmount; i++) {
+			text.getChildren().add(new Label(""));
+		}
+		text.setAlignment(Pos.CENTER);
+		
+		text.autosize();
 	}
 	
 	Label getLabel(int index) {
@@ -111,4 +122,19 @@ public class View {
 	public final void setCpm(final double cpm) {
 		this.cpmProperty().set(cpm);
 	}
+
+	public final StringProperty curLevelProperty() {
+		return this.curLevel;
+	}
+	
+
+	public final String getCurLevel() {
+		return this.curLevelProperty().get();
+	}
+	
+
+	public final void setCurLevel(final String curLevel) {
+		this.curLevelProperty().set(curLevel);
+	}
+	
 }
