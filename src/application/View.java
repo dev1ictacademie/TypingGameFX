@@ -6,14 +6,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class View {
 	
-	private HBox text = new HBox();
+	private FlowPane text = new FlowPane();
 	private IntegerProperty mistakes = new SimpleIntegerProperty();
-	private DoubleProperty cpm = new SimpleDoubleProperty();
+	private IntegerProperty cpm = new SimpleIntegerProperty();
 	private StringProperty lastTyped = new SimpleStringProperty("last typed = ");
 	private StringProperty curLevel = new SimpleStringProperty();
 	private ImageView keyboard = new ImageView();
@@ -27,6 +26,8 @@ public class View {
 		VBox root = new VBox(50);
 		root.setStyle("-fx-font-size: 20px;");
 		
+		HBox top = new HBox();
+		top.autosize();
 		VBox topLeft = new VBox();
 		
 		Label mistakesLabel = new Label("mistakes = 0");
@@ -43,6 +44,17 @@ public class View {
 		
 		topLeft.getChildren().addAll(mistakesLabel, cpmLabel, lastTypedLabel, curLevelLabel);
 		
+		VBox topRight = new VBox();
+		
+		Label user = new Label("User?");
+		
+		topRight.getChildren().addAll(user);
+		topRight.setAlignment(Pos.TOP_RIGHT);
+		topRight.setStyle("-fx-font-size: 20px;");
+		
+		top.getChildren().addAll(topLeft, topRight);
+		top.getChildren().stream().forEach(n -> HBox.setHgrow(n, Priority.ALWAYS));
+		
 		update();
 		
 		VBox middle = new VBox(50);
@@ -50,12 +62,11 @@ public class View {
 		middle.setAlignment(Pos.CENTER);
 		middle.setStyle("-fx-font-size: 30px;");
 		
-		root.getChildren().addAll(topLeft, middle);
+		root.getChildren().addAll(top, middle);
 		return new Scene(root, 800, 600);
 	}
 	
 	void update() {
-		//TODO Move to next row
 		text.getChildren().clear();
 		for(int i = 0; i < charAmount; i++) {
 			text.getChildren().add(new Label(""));
@@ -109,17 +120,17 @@ public class View {
 		this.lastTypedProperty().set(lastTyped);
 	}
 
-	public final DoubleProperty cpmProperty() {
+	public final IntegerProperty cpmProperty() {
 		return this.cpm;
 	}
 	
 
-	public final double getCpm() {
+	public final int getCpm() {
 		return this.cpmProperty().get();
 	}
 	
 
-	public final void setCpm(final double cpm) {
+	public final void setCpm(final int cpm) {
 		this.cpmProperty().set(cpm);
 	}
 

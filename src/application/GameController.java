@@ -13,14 +13,16 @@ import javafx.stage.Stage;
 public class GameController extends Application {
 	View view = new View();
 	HashMap<String, Image> keyboard = keyboard();
-	int curChar = 0, curLevel = 0;//, mistakes = 0;
+	HashMap<Character, Integer> mistakes = new HashMap();
+	int curChar = 0, curLevel = 0;
 	long timeStamp, cpm = 0;
 	boolean anim = false;
 	AnimationTimer at;
-	String output = new Level(LevelData.levels[curLevel]).getOutput();
+	String output;
 
 	@Override
     public void start(Stage primaryStage) {
+		output = new Level(LevelData.levels[curLevel]).getOutput();
     	view.setAmount(output.length());
     	Scene scene = view.init();
 
@@ -50,27 +52,10 @@ public class GameController extends Application {
     	scene.setOnKeyPressed(ke -> onKeyPressed(ke.getText()));
     	primaryStage.show();
     }
-
-	void update() {
-		if ((view.getMistakes() + 0.1)/output.length() < 0.8) {
-			curLevel=curLevel<LevelData.levels.length-1?curLevel+1:0;
-			view.setCurLevel("Current level = " + curLevel);
-		}
-		Level level = new Level(LevelData.levels[curLevel]);
-		//level.setNumberOfCharstoType(int);
-
-		output = level.getOutput();
-		view.setAmount(output.length());
-		view.update();
-		
-		
-    	for(int i = 0; i < output.length(); i++) {
-    		view.setText(view.getLabel(i), output.charAt(i)+"");
-    	}
-	}
 	
+	// FIXME (curChar == 0) is a bad conditional for resetting
+	/** Processes keyboard input */
     void onKeyPressed(String ke) {
-    	// process keyboard input
     	char[] array = output.toCharArray();
     	if(ke.equals(array[curChar]+"")) {
     		view.getLabel(curChar).setStyle("-fx-background-color: #00FF00;");
@@ -87,19 +72,45 @@ public class GameController extends Application {
     		view.getLabel(curChar).setStyle("-fx-background-color: #FF0000");
     		view.setMistakes(view.getMistakes()+1);
     		// TODO Remember which chars go wrong the most
+    		mistakes.compute(array[curChar], (k, v) -> (v == null)?1:v+1);
+    		//System.out.println(mistakes);
     	}
     	view.setLastTyped("last typed = " + ke);
     	
     	// characters per minute
+    	// FIXME 23500 cpm is a bit much
     	if (curChar == 0) {
-    		view.setCpm((output.length()/((1.0*System.nanoTime()-timeStamp))*60_000_000_000d));
+    		view.setCpm((int)(output.length()/((1.0*System.nanoTime()-timeStamp))*60_000_000_000d));
     		cpm = 0;
     	}
-    	if(cpm == 0) timeStamp = System.nanoTime();
-    	cpm++; //counts wrong chars as well
+    	
+    	if(cpm == 0) {
+    		timeStamp = System.nanoTime();
+    		cpm++; // doesn't do anything other than 'not be zero'
+    	}
     }
 
-    HashMap keyboard() {
+    /** Updates the view */
+	void update() {
+		if ((view.getMistakes() + 0.1)/output.length() < 0.8) {
+			curLevel=curLevel<LevelData.levels.length-1?curLevel+1:0;
+			view.setCurLevel("Current level = " + curLevel);
+			view.setMistakes(0);
+		}
+		Level level = new Level(LevelData.levels[curLevel]);
+		//level.setNumberOfCharstoType(int);
+
+		output = level.getOutput();
+		view.setAmount(output.length());
+		view.update();
+		
+		
+    	for(int i = 0; i < output.length(); i++) {
+    		view.setText(view.getLabel(i), output.charAt(i)+"");
+    	}
+	}
+
+    private HashMap keyboard() {
     	HashMap keyboard = new HashMap();
     	for(int i = 97; i < 97+26; i++) {
     		keyboard.put(Character.toString((char)i), new Image(Character.toString((char)i)+".png"));
