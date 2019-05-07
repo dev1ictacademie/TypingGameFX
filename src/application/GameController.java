@@ -13,15 +13,20 @@ import javafx.stage.Stage;
 public class GameController extends Application {
 	View view = new View();
 	HashMap<String, Image> keyboard = keyboard();
-	HashMap<Character, Integer> mistakes = new HashMap();
-	int curChar = 0, curLevel = 0;
 	long timeStamp, cpm = 0;
 	boolean anim = false;
 	AnimationTimer at;
 	String output;
+	
+	Player p = Player.create("test");
+	{p.setCurLevel(3);}
+	
+	HashMap<Character, Integer> mistakes = p!=null?p.getMistakes():new HashMap<>();
+	int curChar = 0, curLevel = p!=null?p.getCurLevel():0;
 
 	@Override
     public void start(Stage primaryStage) {
+		view.setCurLevel("Current level = " + curLevel);
 		output = new Level(LevelData.levels[curLevel]).getOutput();
     	view.setAmount(output.length());
     	Scene scene = view.init();
@@ -104,10 +109,12 @@ public class GameController extends Application {
 		view.setAmount(output.length());
 		view.update();
 		
-		
     	for(int i = 0; i < output.length(); i++) {
     		view.setText(view.getLabel(i), output.charAt(i)+"");
     	}
+    	
+    	p.setCurLevel(curLevel);
+    	p.setMistakes(mistakes);
 	}
 
     private HashMap keyboard() {
