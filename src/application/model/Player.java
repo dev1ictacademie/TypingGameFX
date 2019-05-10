@@ -9,9 +9,22 @@ import java.util.*;
 
 public class Player {
 	static ArrayList<Player> list = new ArrayList<>();
+	static String file = "file.txt";
 	private String name;
 	private int curLevel = 0;
 	private HashMap<Character, Integer> mistakes = new HashMap<>();
+	
+//	public static void main(String[] args) {
+//		Player p = Player.create("test");
+//		p.setCurLevel(2);
+//		HashMap testMap = new HashMap<>();
+//		testMap.put("f", 4);
+//		p.setMistakes(testMap);
+//		System.out.println(list.size());
+//		save();
+//		load();
+//		System.out.println(list.size());
+//	}
 	
 	private Player(String name) {
 		this.name = name;
@@ -42,8 +55,9 @@ public class Player {
 	}
 	
 	public static void load() {
-		try(BufferedReader br = new BufferedReader(new FileReader("file.txt"))) {
+		try(BufferedReader br = new BufferedReader(new FileReader(file))) {
 		    String line = "";
+		    list.clear();
 	
 		    while ((line = br.readLine())!= null) {
 		        String[] lines = line.split(";");
@@ -55,8 +69,9 @@ public class Player {
 		        	for(int i = 0; i < map.length; i=i+2) {
 		        		p.mistakes.put(map[i].charAt(0), Integer.valueOf(map[i+1]));
 		        	}
+		        	System.out.println(p.toString());
 		        }
-		        line = br.readLine();
+		        //line = br.readLine();
 		    }
 		} catch(Exception e){
             e.printStackTrace();
@@ -64,7 +79,7 @@ public class Player {
 	}
 	
 	public static void save() {		
-		try(BufferedWriter br = new BufferedWriter(new FileWriter("file.txt"))) {
+		try(BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
 			for(Player p : list) {
 				br.write(p.toString());
 				br.newLine();
@@ -80,8 +95,8 @@ public class Player {
 		sb.append(name + ";");
 		sb.append(curLevel + ";");
 		
-		for(char c : mistakes.keySet()) {
-			sb.append(c + ":" + mistakes.get(c));
+		for (Map.Entry<Character, Integer> e : mistakes.entrySet()) {
+			sb.append(e.getKey() + ":" + e.getValue() + ";");
 		}
 		
 		return sb.toString();

@@ -14,38 +14,46 @@ public class GameController extends Application {
 	View view = new View();
 	HashMap<String, Image> keyboard = keyboard();
 	long timeStamp, cpm = 0;
-	boolean anim = false;
+	boolean startLevel = true, anim = false;
 	AnimationTimer at;
 	String output;
 	
+	// TODO Implement players
 	Player p = Player.create("test");
-	{p.setCurLevel(3);}
+	{p.setCurLevel(5);}
 	
 	HashMap<Character, Integer> mistakes = p!=null?p.getMistakes():new HashMap<>();
 	int curChar = 0, curLevel = p!=null?p.getCurLevel():0;
 
 	@Override
     public void start(Stage primaryStage) {
+		// FIXME Duplicate code (see update())
 		view.setCurLevel("Current level = " + curLevel);
 		output = new Level(LevelData.levels[curLevel]).getOutput();
     	view.setAmount(output.length());
     	Scene scene = view.init();
 
     	for(int i = 0; i < output.length(); i++) {
-    		view.setText(view.getLabel(i), output.charAt(i)+"");
+    		view.getLabel(i).setText(output.charAt(i)+"");
     	}
     	view.getLabel(curChar).setStyle("-fx-border-width: 1; -fx-border-color: #000000;");
+    	
     	
     	if(!anim) view.setImage(keyboard.get(output.charAt(curChar)+""));
     	else {
     		AnimationTimer at = new AnimationTimer() {
     			int frameCount = 0;
+    			int last = curChar;
     		    
 	            @Override
 	            public void handle(long currentNanoTime) {
 	               if (frameCount % 6 == 0) {
-	            	   Label label = view.getLabel(curChar);
-	            	   label.setTranslateY(label.getTranslateY()>=(scene.getHeight()/2)?0:label.getTranslateY()+10);
+	               		//int last = curChar;
+	               		for(int i = last; i < output.indexOf(' ', last)+1; i++) {
+		               		Label label = view.getLabel(i); //curChar
+		               		label.setTranslateY(label.getTranslateY()>=(scene.getHeight()/2)?0:label.getTranslateY()+10);
+	               		}
+	               		last = output.indexOf(' ', last)+1;
 	               }         
 	               frameCount++;
 	            }
@@ -58,17 +66,18 @@ public class GameController extends Application {
     	primaryStage.show();
     }
 	
-	// FIXME (curChar == 0) is a bad conditional for resetting
 	/** Processes keyboard input */
     void onKeyPressed(String ke) {
     	char[] array = output.toCharArray();
     	if(ke.equals(array[curChar]+"")) {
     		view.getLabel(curChar).setStyle("-fx-background-color: #00FF00;");
-    		if(anim) view.getLabel(curChar).setTranslateY(0);
+    		//if(anim) view.getLabel(curChar).setTranslateY(0);
     		
     		// To continue : move the following lines outside if-statement
-    		curChar=(curChar<array.length-1)?curChar+1:0; 
-    		if (curChar == 0) update(); 
+    		if(anim && curChar < array.length-1 && array[curChar+1] == ' ') curChar++;
+    		curChar++;
+    		if(curChar >= array.length) {curChar = 0; startLevel = true; update();}
+    		
     		view.getLabel(curChar).setStyle("-fx-border-width: 1; -fx-border-color: #000000;");
     		if(!anim) view.setImage(keyboard.get(output.charAt(curChar)+""));
     	}
@@ -76,22 +85,18 @@ public class GameController extends Application {
     	else {
     		view.getLabel(curChar).setStyle("-fx-background-color: #FF0000");
     		view.setMistakes(view.getMistakes()+1);
-    		// TODO Remember which chars go wrong the most
+    		
+    		// Remember which chars go wrong the most
     		mistakes.compute(array[curChar], (k, v) -> (v == null)?1:v+1);
-    		//System.out.println(mistakes);
+    		p.setMistakes(mistakes);
     	}
     	view.setLastTyped("last typed = " + ke);
     	
     	// characters per minute
-    	// FIXME 23500 cpm is a bit much
-    	if (curChar == 0) {
+    	if (startLevel) {
     		view.setCpm((int)(output.length()/((1.0*System.nanoTime()-timeStamp))*60_000_000_000d));
-    		cpm = 0;
-    	}
-    	
-    	if(cpm == 0) {
     		timeStamp = System.nanoTime();
-    		cpm++; // doesn't do anything other than 'not be zero'
+    		startLevel = false;
     	}
     }
 
@@ -104,13 +109,14 @@ public class GameController extends Application {
 		}
 		Level level = new Level(LevelData.levels[curLevel]);
 		//level.setNumberOfCharstoType(int);
-
+		
+		//TODO Animation, split words and remove spaces
 		output = level.getOutput();
 		view.setAmount(output.length());
 		view.update();
 		
     	for(int i = 0; i < output.length(); i++) {
-    		view.setText(view.getLabel(i), output.charAt(i)+"");
+    		view.getLabel(i).setText(output.charAt(i)+"");
     	}
     	
     	p.setCurLevel(curLevel);

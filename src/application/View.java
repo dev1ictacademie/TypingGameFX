@@ -27,7 +27,6 @@ public class View {
 		root.setStyle("-fx-font-size: 20px;");
 		
 		HBox top = new HBox();
-		top.autosize();
 		VBox topLeft = new VBox();
 		
 		Label mistakesLabel = new Label("mistakes = 0");
@@ -53,6 +52,8 @@ public class View {
 		topRight.setStyle("-fx-font-size: 20px;");
 		
 		top.getChildren().addAll(topLeft, topRight);
+		
+		// Actually moves topRight to the top right.
 		top.getChildren().stream().forEach(n -> HBox.setHgrow(n, Priority.ALWAYS));
 		
 		update();
@@ -69,20 +70,20 @@ public class View {
 	void update() {
 		text.getChildren().clear();
 		for(int i = 0; i < charAmount; i++) {
-			text.getChildren().add(new Label(""));
+			Label label = new Label("");
+			label.setStyle("-fx-background-color: #778899; -fx-text-fill: #FFFFFF;");
+			text.getChildren().add(label);
 		}
 		text.setAlignment(Pos.CENTER);
-		
-		text.autosize();
 	}
 	
 	Label getLabel(int index) {
 		return (Label) text.getChildren().get(index);
 	}
 	
-	void setText(Label label, String s) {
-		label.setText(s);
-	}
+//	void setText(Label label, String s) {
+//		label.setText(s);
+//	}
 	
 	void setImage(Image image) {
 		keyboard.setImage(image);
