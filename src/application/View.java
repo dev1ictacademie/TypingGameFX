@@ -70,7 +70,7 @@ public class View {
 	void update() {
 		text.getChildren().clear();
 		for(int i = 0; i < charAmount; i++) {
-			Label label = new Label("");
+			Label label = new Label();
 			label.setStyle("-fx-background-color: #778899; -fx-text-fill: #FFFFFF;");
 			text.getChildren().add(label);
 		}
