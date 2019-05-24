@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.scene.control.ContentDisplay;
 
 public class GameController extends Application {
 	View view = new View();
@@ -28,6 +29,11 @@ public class GameController extends Application {
 
 	@Override
     public void start(Stage primaryStage) {
+//		for(int i = 0; i < 5; i++) {
+//			Player p = Player.create("Player" + i);
+//			view.setUsers(p);
+//		}
+		
 		// FIXME Duplicate code (see update())
 		view.setCurLevel("Current level = " + curLevel);
 		output = new Level(LevelData.levels[curLevel]).getOutput();
@@ -35,9 +41,10 @@ public class GameController extends Application {
     	Scene scene = view.init();
 
     	for(int i = 0; i < output.length(); i++) {
-//    		if(anim) 
-//    			view.getLabel(i).setGraphic(new ImageView(balloons.get(output.charAt(i))));
-//    		else 
+    		if(anim) {
+    			ImageView image = new ImageView(balloons.get(output.charAt(i)+""));
+    			view.getLabel(i).setGraphic(image);
+    		} else 
     			view.getLabel(i).setText(output.charAt(i)+"");
     	}
     	view.getLabel(curChar).setStyle("-fx-border-width: 1; -fx-border-color: #000000;");
@@ -77,20 +84,14 @@ public class GameController extends Application {
     	if(ke.equals(array[curChar]+"")) {
     		view.getLabel(curChar).setStyle("-fx-background-color: #00FF00;");
     		
-//    		if(anim && curChar == output.indexOf(' ')) {
-//    			for(int i = output.lastIndexOf(' ', curChar); 
-//    					i < (output.indexOf(' ', curChar)+1==0?output.length():output.indexOf(' ', curChar)+1); i++) {
-//    				view.getLabel(i).setTranslateY(0);
-//    			}
-//    		}
-    		
     		// To continue : move the following lines outside if-statement
     		if(anim && curChar < array.length-1 && array[curChar+1] == ' ') curChar++;
     		curChar++;
     		if(curChar >= array.length) {curChar = 0; startLevel = true; update();}
     		
-    		view.getLabel(curChar).setStyle("-fx-border-width: 1; -fx-border-color: #000000;");
     		if(!anim) view.setImage(keyboard.get(output.charAt(curChar)+""));
+    		view.getLabel(curChar).setStyle("-fx-border-width: 1; -fx-border-color: #000000;");
+    			
     	}
     	else {
     		view.getLabel(curChar).setStyle("-fx-background-color: #FF0000");
@@ -127,9 +128,10 @@ public class GameController extends Application {
 		// FIXME Balloons don't show
     	for(int i = 0; i < output.length(); i++) {
     		Label label = view.getLabel(i);
-//    		if(anim) {
-//    			label.setGraphic(new ImageView(balloons.get(output.charAt(i))));
-//    		} else 
+    		if(anim) {
+    			label.setGraphic(new ImageView(balloons.get(output.charAt(i))));
+ 
+    		} else 
     			label.setText(output.charAt(i)+"");
     	}
     	
